@@ -36,9 +36,9 @@ def connect_to_hh(keyword='Python', count_company = 15):
 	:return: кортеж из словаря и списка
 	'''
 	
-	hh_api = HeadHunterAPI(keyword)
+	hh_api = HeadHunterAPI(keyword, count_company)
 	print("Ожидайте, идет опрос сайта headhunter.ru")
-	employers = hh_api.get_employers(count_company)
+	employers = hh_api.get_employers()
 	vacancies = hh_api.get_vacancies()
 	return employers, vacancies
 
@@ -119,7 +119,11 @@ def main():
 	if len(keyword) == 0:
 		keyword = 'Стажер'
 	find_keyword = db_manager.get_vacancies_with_keyword(keyword)
-	print(f'\nВакансии с наличием слова "{keyword}"')
+	print(f'\nВакансии с наличием слова "{keyword}"', end='')
+	if len(find_keyword) == 0:
+		print(" отсутствуют.")
+	else:
+		print('\n')
 	for row in find_keyword:
 		print(row)
 
