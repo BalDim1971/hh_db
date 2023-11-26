@@ -29,7 +29,7 @@ def init_bd(params: dict) -> BDCreator:
 	return bd_hh
 
 
-def connect_to_hh(keyword='Python'):
+def connect_to_hh(keyword='Python', count_company = 15):
 	'''
 	Посылаем запрос к headhunter.ru, получаем данные и преобразуем в нужный формат
 	
@@ -38,7 +38,7 @@ def connect_to_hh(keyword='Python'):
 	
 	hh_api = HeadHunterAPI(keyword)
 	print("Ожидайте, идет опрос сайта headhunter.ru")
-	employers = hh_api.get_employers()
+	employers = hh_api.get_employers(count_company)
 	vacancies = hh_api.get_vacancies()
 	return employers, vacancies
 
@@ -78,11 +78,17 @@ def main():
 	bd_hh = init_bd(params)
 	
 	# Получаем ключевое слово
-	keyword = input('Введите слово для запроса: ')
-	count_company = input('Укажите количество компаний для поиска (10-15): ')
+	keyword = input('Введите слово для запроса (по умолчанию "Python"): ')
+	if len(keyword) == 0:
+		keyword = 'Python'
+	
+	count_company = input('Укажите количество компаний для поиска (по умолчанию 15) (10-15): ')
+	if len(count_company) == 0 or not count_company.isdigit():
+		count_company = 15
+	count_company = int(count_company)
 	
 	# Подключаемся к headhunter.ru, получаем данные и преобразуем в нужный формат
-	employers, vacancies = connect_to_hh(keyword)
+	employers, vacancies = connect_to_hh(keyword, count_company)
 	
 	# Записываем данные в БД
 	save_data(bd_hh, employers, vacancies)
@@ -109,7 +115,9 @@ def main():
 	for row in high_salary:
 		print(row)
 	
-	keyword = input('\nВведите слово для поиска: ')
+	keyword = input('\nВведите слово для поиска (по умолчанию "Стажер"): ')
+	if len(keyword) == 0:
+		keyword = 'Стажер'
 	find_keyword = db_manager.get_vacancies_with_keyword(keyword)
 	print(f'\nВакансии с наличием слова "{keyword}"')
 	for row in find_keyword:
